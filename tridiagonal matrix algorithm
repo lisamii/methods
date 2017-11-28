@@ -1,0 +1,78 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+void pr(vector<vector<double>>&A, int n, vector<double>&B)
+{
+	vector<double> P(n), Q(n);
+
+
+	int i, j;
+	for (i = 0; i < n; i++) {
+		A[i][i] = -A[i][i];
+		for (j = 0; j < n; j++) {
+			cout << A[i][j] << " ";
+		}
+		cout << endl;
+	}
+
+	P[0] = A[0][1] / A[0][0];
+	Q[0] = -(B[0] / A[0][0]);
+
+	cout << "P   Q\n";
+	cout << P[0] << ", " << Q[0] << "\n";
+
+	for (i = 1; i < n - 1; i++) {
+		P[i] = (A[i][i + 1]) / (A[i][i] - A[i][i - 1] * P[i - 1]);
+		Q[i] = (A[i][i - 1] * Q[i - 1] - B[i]) / (A[i][i] - A[i][i - 1] * P[i - 1]);
+
+		cout << P[i] << ", " << Q[i] << "\n";
+	}
+	Q[n - 1] = (A[n - 1][n - 2] * Q[n - 2] - B[n - 1]) / (A[n - 1][n - 1] - A[n - 1][n - 2] * P[n - 2]);
+	B[n - 1] = Q[n - 1];
+
+	for (i = n - 2; i >= 0; i--) {
+		B[i] = P[i] * B[i + 1] + Q[i];
+	}
+
+	return;
+}
+
+int main(int argc, char* argv[]) {
+
+	setlocale(LC_ALL, "rus");
+
+	int i, j, n;
+
+	cout << "Введите размерность матрицы А: ";
+	cin >> n;
+
+	cout << "Введите матрицу A:\n";
+	vector<vector<double>> A(n, vector<double>(n));
+
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < n; j++) {
+			cin >> A[i][j];
+			if (((i < j - 1) || (i > j + 1)) && (A[i][j] != 0)) {
+				cout << "Матрица не тридиагональная!\n";
+				system("pause");
+				return 1;
+			}
+		}
+	}
+
+	cout << "input vector\n";
+	vector<double> B(n);
+	for (i = 0; i < n; i++)
+		cin >> B[i];
+
+	pr(A, n, B);
+
+	cout << "\nResult vector:\n";
+	for (i = 0; i < n; i++)
+		cout << B[i] << "\n";
+
+	system("pause");
+	return 0;
+}
